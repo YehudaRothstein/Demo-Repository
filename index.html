@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<style>
+.cube {
+  width: 50px;
+  height: 50px;
+  margin: 10px;
+  display: inline-block;
+  line-height: 50px;
+  text-align: center;
+  color: white;
+  cursor: pointer;
+}
+
+.red {
+  background-color: #750707;
+}
+
+.blue {
+  background-color: #012265;
+}
+
+.selected {
+  background-color: #80857a !important;
+}
+
+/* Style the dropdown container */
+.select-container {
+  position: relative;
+  width: 200px;
+  margin: 0 auto;
+}
+
+/* Style the dropdown */
+.select-container select {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #f1f1f1;
+  appearance: none; /* Remove default appearance */
+}
+
+/* Style the dropdown arrow */
+.select-container::after {
+  content: '\25BC';
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  pointer-events: none; /* Ignore clicks */
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2 class="mt-4">FRC Match Form</h2>
+
+  <form action="http://localhost:5000/submit" method="post" class="mt-4">
+    <div class="form-group">
+      <label for="assigned_match_num">Assigned Match:</label>
+      <input type="number" id="assigned_match_num" name="assigned_match_num" min="1" max="80" class="form-control">
+    </div>
+    <div class="form-group">
+      <label for="usercode">User Code:</label>
+      <div class="select-container">
+        <select id="usercode" name="usercode" class="form-control"></select>
+      </div>
+    </div>
+    <input type="hidden" id="alliences" name="alliences">
+    <div class="form-group">
+      <label for="place">Place:</label>
+      <div id="cubes">
+        <div class="cube red" onclick="updateAllience('r', 1)">1</div>
+        <div class="cube red" onclick="updateAllience('r', 2)">2</div>
+        <div class="cube red" onclick="updateAllience('r', 3)">3</div><br>
+        <div class="cube blue" onclick="updateAllience('b', 4)">4</div>
+        <div class="cube blue" onclick="updateAllience('b', 5)">5</div>
+        <div class="cube blue" onclick="updateAllience('b', 6)">6</div>
+        <input type="hidden" id="place" name="place">
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+
+<script>
+var selectedCube = null;
+
+function updateAllience(color, place) {
+  document.getElementById('alliences').value = color;
+  document.getElementById('place').value = place;
+
+  if (selectedCube) {
+    selectedCube.classList.remove('selected');
+  }
+
+  selectedCube = event.target;
+  selectedCube.classList.add('selected');
+}
+
+$(document).ready(function() {
+  // Fetch the user data
+  $.getJSON('user_data.json', function(data) {
+    // Populate the user code dropdown with the user IDs
+    $.each(data, function(key, value) {
+      $('#usercode').append($('<option></option>').attr('value', value).text(key));
+    });
+  });
+});
+</script>
+
+</body>
+</html>
